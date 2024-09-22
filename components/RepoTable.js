@@ -1,47 +1,33 @@
-import { FlatList, View, Text, StyleSheet } from "react-native"
+import { FlatList, View, Text, StyleSheet, Image } from "react-native";
 
-
-export default function RepoTable({repositories}) {
-
+export default function RepoTable({ repositories }) {
     return (
-    /* Lista näytettävistä repositorioista */ 
-    <FlatList
-        data={repositories} // Repositoriot, joita näytetään listassa
-        keyExtractor={(item) => item.id.toString()} // Unikaalinen avain jokaiselle listan itemille
-        renderItem={({ item }) =>
-            <View>
-                {/* Repositorion nimi */}
-                <Text style={styles.repoName}>
-                    {item.full_name}
-                </Text>
-                {/* Repositorion kuvaus */}
-                <Text style={styles.repoDescription}>
-                    {item.description}
-                </Text>
-            </View>}
-    />
-    
-)
+        <FlatList
+            data={repositories}
+            keyExtractor={(item) => item.idMeal.toString()}
+            renderItem={({ item }) => (
+                <View style={styles.container}>
+                    <Text style={styles.repoName}>{item.strMeal}</Text>
+                    <Image source={{ uri: item.strMealThumb }} style={styles.image} />
+                </View>
+            )}
+        />
+    );
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        backgroundColor: '#fff', // Valkoinen tausta
-        alignItems: 'center', // Kohdistetaan lapset keskelle vaakasuunnassa
-        justifyContent: 'flex-start', // Kohdistetaan lapset pystysuunnassa alkuun
-        paddingTop: 100, // Lisätään yläreunaan 100px tyhjää tilaa
-    },
-    input: {
-        fontSize: 18, // Tekstikoko
-        width: 200, // Tekstikentän leveys
-        marginBottom: 20, // Väli tekstikentän ja painikkeen välillä
+        marginBottom: 20, // Lisää väliä eri itemien väliin
+        alignItems: 'center', // Keskitetään sisältö
     },
     repoName: {
-        fontSize: 18, // Repositorion nimen tekstikoko
-        fontWeight: "bold", // Lihavoitu teksti
+        fontSize: 18,
+        fontWeight: "bold",
     },
-    repoDescription: {
-        fontSize: 16, // Repositorion kuvauksen tekstikoko
-    }, 
-})
+    image: {
+        width: 100,
+        height: 100,
+        borderRadius: 8,
+        marginTop: 10,
+    },
+});

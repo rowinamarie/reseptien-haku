@@ -1,15 +1,15 @@
 
 
-export function fetchRepositories (keyword) {
-  
+export async function fetchRepositories(keyword) {
     const apiURL = process.env.EXPO_PUBLIC_API_URL;
 
-    return fetch(`${apiURL}?q=${keyword}`)
-    .then(response => {
-        if (!response.ok)
-            throw new Error(`Error in fetch: ${response.status}  ${response.statusText}`); // Heitetään virhe, jos vastaus ei ole ok
+    console.log(`Fetching URL: ${apiURL}?i=${keyword}`);
 
-        return response.json(); // Muutetaan vastaus JSON-muotoon
-    })
-    
+    const response = await fetch(`${apiURL}?i=${keyword}`); 
+    if (!response.ok) {
+        throw new Error(`Error in fetch: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json(); // Odotetaan JSON-muotoon muuttamista
+    return data.meals; // Palautetaan oikea data
 }
