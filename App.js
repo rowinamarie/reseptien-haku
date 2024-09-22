@@ -1,74 +1,51 @@
-import { useState } from 'react';
-import { StyleSheet, TextInput, View, Button, Keyboard, ActivityIndicator } from 'react-native';
-import RepoTable from './components/RepoTable';
-import  {fetchRepositories} from './components/api';
-
-
+import { useState } from 'react'; // Tuodaan useState-hook, joka hallitsee komponentin tilaa
+import { StyleSheet, TextInput, View, Button, Keyboard, ActivityIndicator } from 'react-native'; // Tuodaan tarvittavat komponentit React Nativesta
+import RepoTable from './components/RepoTable'; // Tuodaan RepoTable-komponentti, joka näyttää reseptit
+import { fetchRepositories } from './components/api'; // Tuodaan fetchRepositories-funktio API-kutsujen tekemiseen
 
 export default function App() {
-    // keyword pitää hakusanatiedon
-    const [keyword, setKeyword] = useState('');
-    
-    // repositories tallentaa haetut GitHub-repositoriot
-    const [repositories, setRepositories] = useState([]);
-    
-    // loading hallitsee ActivityIndicatorin näyttämistä latauksen aikana
-    const [loading, setLoading] = useState(false);
+    // Tila keywordille, repositoriesille ja loading-tilalle
+    const [keyword, setKeyword] = useState(''); // Hakusana, jota käyttäjä syöttää
+    const [repositories, setRepositories] = useState([]); // Haetut reseptit tallennetaan tähän
+    const [loading, setLoading] = useState(false); // Lataustila, joka näyttää latausindikaattorin
 
-    // handleFetch suorittaa API-haun ja päivittää repositoriolistauksen
     const handleFetch = () => {
-        setLoading(true); // Näyttää latausindikaattorin haun aikana
-        
-        // Sulkee näppäimistön haun aloituksen yhteydessä
-        Keyboard.dismiss();
+        setLoading(true); // Asetetaan loading-tila true ennen haun aloittamista
+        Keyboard.dismiss(); // Suljetaan näppäimistö
 
-        // Tehdään fetch-kutsu GitHubin repository-hakuun käyttäen hakusanaa
-      fetchRepositories (keyword)
-            .then(data => setRepositories(data.items)) // Päivitetään repositoriot
-            .catch(err => console.error(err)) // Käsitellään mahdolliset virheet
-            .finally(() => setLoading(false)); // Lopetetaan latausindikaattorin näyttö
+        // Tehdään API-kutsu ja päivitetään repositoriot tai käsitellään virheet
+        fetchRepositories(keyword)
+            .then(data => setRepositories(data)) // Päivitetään repositoriot haetulla datalla
+            .catch(err => console.error(err)) // Kirjataan virhe konsoliin, jos kutsu epäonnistuu
+            .finally(() => setLoading(false)); // Asetetaan loading-tila false haun päätyttyä
     };
 
     return (
-        <View style={styles.container}>
-            {/* Tekstikenttä, johon käyttäjä voi syöttää hakusanan */}
+        <View style={styles.container}> // Pääkontaineri, joka sisältää kaikki komponentit
             <TextInput
-                style={styles.input}
+                style={styles.input} // Tekstikenttätyylit
                 placeholder='keyword' // Paikkamerkki tekstikentässä
                 value={keyword} // Sidotaan tekstikentän arvo hakusanaan
                 onChangeText={text => setKeyword(text)} // Päivitetään hakusana käyttäjän syötteen perusteella
             />
-            
-            {/* Painike, joka käynnistää haun */}
-            <Button title="Find" onPress={handleFetch} />
-
-            {/* Näytetään latausindikaattori, jos loading on true */}
-            {loading && <ActivityIndicator size="large" />}
-            
-            <RepoTable repositories={repositories}/>
+            <Button title="Find" onPress={handleFetch} /> // Painike haun aloittamiseen
+            {loading && <ActivityIndicator size="large" />} // Näytetään latausindikaattori, jos loading on true
+            <RepoTable repositories={repositories} /> // Näytetään haetut reseptit RepoTable-komponentissa
         </View>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        flex: 1, // Ota koko käytettävissä oleva tila
         backgroundColor: '#fff', // Valkoinen tausta
-        alignItems: 'center', // Kohdistetaan lapset keskelle vaakasuunnassa
-        justifyContent: 'flex-start', // Kohdistetaan lapset pystysuunnassa alkuun
-        paddingTop: 100, // Lisätään yläreunaan 100px tyhjää tilaa
+        alignItems: 'center', // Keskitetään sisältö vaakasuunnassa
+        justifyContent: 'flex-start', // Kohdistetaan sisältö pystysuunnassa alkuun
+        paddingTop: 100, // Lisätään yläreunaan tilaa
     },
     input: {
-        fontSize: 18, // Tekstikoko
+        fontSize: 18, // Tekstin koko
         width: 200, // Tekstikentän leveys
         marginBottom: 20, // Väli tekstikentän ja painikkeen välillä
     },
-    repoName: {
-        fontSize: 18, // Repositorion nimen tekstikoko
-        fontWeight: "bold", // Lihavoitu teksti
-    },
-    repoDescription: {
-        fontSize: 16, // Repositorion kuvauksen tekstikoko
-    },
-
 });
